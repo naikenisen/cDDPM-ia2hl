@@ -9,5 +9,7 @@ source /beegfs/data/work/imvia/in156281/cDDPM/venv/bin/activate
 module load python
 export PYTHONPATH=/work/imvia/in156281/cDDPM/venv/lib/python3.9/site-packages:$PYTHONPATH
 export MPLCONFIGDIR=/work/imvia/in156281/.cache/matplotlib
+cd
+cd /beegfs/data/work/imvia/in156281/cDDPMv2
 
 python run.py -c config/config.json -p train

@@ -129,37 +129,50 @@ class Palette(BaseModel):
         return self.train_metrics.result()
     
     def val_step(self):
-        self.netG.eval()
-        self.val_metrics.reset()
-        with torch.no_grad():
-            for val_data in tqdm.tqdm(self.val_loader):
-                self.set_input(val_data)
-                if self.opt['distributed']:
-                    if self.task in ['inpainting','uncropping']:
-                        self.output, self.visuals = self.netG.module.restoration(self.cond_image, y_t=self.cond_image, 
-                            y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
-                    else:
-                        self.output, self.visuals = self.netG.module.restoration(self.cond_image, sample_num=self.sample_num)
-                else:
-                    if self.task in ['inpainting','uncropping']:
-                        self.output, self.visuals = self.netG.restoration(self.cond_image, y_t=self.cond_image, 
-                            y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
-                    else:
-                        self.output, self.visuals = self.netG.restoration(self.cond_image, sample_num=self.sample_num)
-                    
-                self.iter += self.batch_size
-                self.writer.set_iter(self.epoch, self.iter, phase='val')
+            self.netG.eval()
+            self.val_metrics.reset()
+            
+            # --- 1. On force le schedule de test (1000 steps) pour la validation ---
+            if self.opt['distributed']:
+                self.netG.module.set_new_noise_schedule(phase='test')
+            else:
+                self.netG.set_new_noise_schedule(phase='test')
 
-                for met in self.metrics:
-                    key = met.__name__
-                    value = met(self.gt_image, self.output)
-                    self.val_metrics.update(key, value)
-                    self.writer.add_scalar(key, value)
-                for key, value in self.get_current_visuals(phase='val').items():
-                    self.writer.add_images(key, value)
-                self.writer.save_images(self.save_current_results())
+            with torch.no_grad():
+                for val_data in tqdm.tqdm(self.val_loader):
+                    self.set_input(val_data)
+                    if self.opt['distributed']:
+                        if self.task in ['inpainting','uncropping']:
+                            self.output, self.visuals = self.netG.module.restoration(self.cond_image, y_t=self.cond_image, 
+                                y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
+                        else:
+                            self.output, self.visuals = self.netG.module.restoration(self.cond_image, sample_num=self.sample_num)
+                    else:
+                        if self.task in ['inpainting','uncropping']:
+                            self.output, self.visuals = self.netG.restoration(self.cond_image, y_t=self.cond_image, 
+                                y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
+                        else:
+                            self.output, self.visuals = self.netG.restoration(self.cond_image, sample_num=self.sample_num)
+                        
+                    self.iter += self.batch_size
+                    self.writer.set_iter(self.epoch, self.iter, phase='val')
 
-        return self.val_metrics.result()
+                    for met in self.metrics:
+                        key = met.__name__
+                        value = met(self.gt_image, self.output)
+                        self.val_metrics.update(key, value)
+                        self.writer.add_scalar(key, value)
+                    for key, value in self.get_current_visuals(phase='val').items():
+                        self.writer.add_images(key, value)
+                    self.writer.save_images(self.save_current_results())
+
+            # --- 2. On remet le schedule de train (2000 steps) pour la suite de l'entraînement ---
+            if self.opt['distributed']:
+                self.netG.module.set_new_noise_schedule(phase='train')
+            else:
+                self.netG.set_new_noise_schedule(phase='train')
+
+            return self.val_metrics.result()
 
     def test(self):
         self.netG.eval()

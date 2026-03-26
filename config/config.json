@@ -125,8 +125,8 @@
         "train": { 
             "n_epoch": 200,
             "n_iter": 1e8, 
-            "val_epoch": 5, 
-            "save_checkpoint_epoch": 5,
+            "val_epoch": 20, 
+            "save_checkpoint_epoch": 20,
             "log_iter": 1e4, 
             "tensorboard" : true 
         }

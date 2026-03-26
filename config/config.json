@@ -80,7 +80,7 @@
                         "ema_decay": 0.9999
                     },
                     "optimizers": [
-                        { "lr": 5e-5, "weight_decay": 0}
+                        { "lr": 1e-4, "weight_decay": 0}
                     ]
                 }
             }, 
@@ -110,7 +110,7 @@
                             },
                             "test": {
                                 "schedule": "linear",
-                                "n_timestep": 200, 
+                                "n_timestep": 300, 
                                 "linear_start": 1e-6,
                                 "linear_end": 0.01
                             }
@@ -123,7 +123,7 @@
         },
 
         "train": { 
-            "n_epoch": 200,
+            "n_epoch": 350,
             "n_iter": 1e8, 
             "val_epoch": 20, 
             "save_checkpoint_epoch": 20,

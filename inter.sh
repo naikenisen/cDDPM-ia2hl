@@ -34,6 +34,18 @@ resume_state = '/work/imvia/in156281/cDDPMv2/experiments/train_virtual_staining_
 
 cfg = json.loads(base_config.read_text())
 cfg['datasets']['test']['which_dataset']['args']['data_root'] = test_root
+cfg['datasets']['test']['which_dataset']['args']['allowed_patches'] = [
+	'c_patch_x4000_y30000_tile_x0_y1024',
+	'c_patch_x46000_y26000_tile_x1024_y1024',
+	'e_patch_x18000_y48000_tile_x512_y0',
+	'e_patch_x30000_y26000_tile_x0_y1024',
+	'i_patch_x34000_y54000_tile_x512_y1024',
+	'i_patch_x38000_y10000_tile_x0_y512',
+	'j_patch_x56000_y32000_tile_x512_y512',
+	'j_patch_x102000_y40000_tile_x1024_y512',
+	'l_patch_x4000_y42000_tile_x512_y1024',
+	'l_patch_x36000_y36000_tile_x1024_y512',
+]
 cfg['path']['resume_state'] = resume_state
 
 out_config.write_text(json.dumps(cfg, indent=4))

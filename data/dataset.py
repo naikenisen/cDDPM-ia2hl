@@ -2,6 +2,7 @@ import torch.utils.data as data
 from torchvision import transforms
 from PIL import Image
 import os
+from pathlib import Path
 
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
@@ -15,7 +16,7 @@ def pil_loader(path):
     return Image.open(path).convert('RGB')
 
 class VirtualStainingDataset(data.Dataset):
-    def __init__(self, data_root, data_len=-1, image_size=[512, 512], loader=pil_loader):
+    def __init__(self, data_root, data_len=-1, image_size=[512, 512], allowed_patches=None, loader=pil_loader):
         self.data_root = data_root
         
         # Définition des sous-dossiers HES et CD30
@@ -27,6 +28,13 @@ class VirtualStainingDataset(data.Dataset):
             self.image_names = sorted([f for f in os.listdir(self.hes_dir) if is_image_file(f)])
         else:
             self.image_names = []
+
+        if allowed_patches:
+            allowed_set = set(allowed_patches)
+            self.image_names = [
+                name for name in self.image_names
+                if name in allowed_set or Path(name).stem in allowed_set
+            ]
             
         if data_len > 0:
             self.image_names = self.image_names[:int(data_len)]

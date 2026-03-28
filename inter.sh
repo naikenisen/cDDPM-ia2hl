@@ -29,7 +29,7 @@ from pathlib import Path
 base_config = Path('/beegfs/data/work/imvia/in156281/cDDPMv2/config/config.json')
 out_config = Path('/beegfs/data/work/imvia/in156281/cDDPMv2/config/config.infer_140.json')
 
-test_root = '/work/imvia/in156281/cDDPMv2/dataset/test'
+test_root = '/work/imvia/in156281/ia2hl/dataset_tiled_512/test'
 resume_state = '/work/imvia/in156281/cDDPMv2/experiments/train_virtual_staining_hes_to_cd30_260326_115613/checkpoint/140'
 
 cfg = json.loads(base_config.read_text())

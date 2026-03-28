@@ -54,7 +54,7 @@
             "which_dataset": {
                 "name": ["data.dataset", "VirtualStainingDataset"],
                 "args":{
-                    "data_root": "/work/imvia/in156281/cDDPMv2/dataset/test",
+                    "data_root": "/work/imvia/in156281/ia2hl/dataset_tiled_512/test",
                     "image_size": [512, 512]
                 }
             },

@@ -54,9 +54,12 @@ class VirtualStainingDataset(data.Dataset):
         hes_path = os.path.join(self.hes_dir, file_name)
         cond_image = self.tfs(self.loader(hes_path))
 
-        # 2. CD30 = Ground Truth (Cible)
+        # 2. CD30 = Ground Truth (Cible). If unavailable (inference-only), reuse condition image.
         cd30_path = os.path.join(self.cd30_dir, file_name)
-        gt_image = self.tfs(self.loader(cd30_path))
+        if os.path.exists(cd30_path):
+            gt_image = self.tfs(self.loader(cd30_path))
+        else:
+            gt_image = cond_image.clone()
 
         ret['gt_image'] = gt_image
         ret['cond_image'] = cond_image

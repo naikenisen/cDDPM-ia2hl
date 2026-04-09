@@ -8,7 +8,10 @@ import numpy as np
 import torch
 from PIL import Image
 from cleanfid import fid
-from skimage.metrics import structural_similarity
+try:
+    from skimage.metrics import structural_similarity
+except ImportError:
+    structural_similarity = None
 
 try:
     import lpips
@@ -56,10 +59,28 @@ def psnr(img_a, img_b, max_val=255.0):
 
 
 def ssim_rgb(img_a, img_b):
-    score = structural_similarity(img_a, img_b, data_range=255.0, channel_axis=2, full=False)
-    if isinstance(score, tuple):
-        score = score[0]
-    return float(score)
+    if structural_similarity is not None:
+        score = structural_similarity(img_a, img_b, data_range=255.0, channel_axis=2, full=False)
+        if isinstance(score, tuple):
+            score = score[0]
+        return float(score)
+
+    # Fallback SSIM (global statistics) when scikit-image is unavailable.
+    c1 = (0.01 * 255.0) ** 2
+    c2 = (0.03 * 255.0) ** 2
+    vals = []
+    for c in range(3):
+        x = img_a[:, :, c]
+        y = img_b[:, :, c]
+        mu_x = x.mean()
+        mu_y = y.mean()
+        sigma_x = x.var()
+        sigma_y = y.var()
+        sigma_xy = ((x - mu_x) * (y - mu_y)).mean()
+        num = (2.0 * mu_x * mu_y + c1) * (2.0 * sigma_xy + c2)
+        den = (mu_x ** 2 + mu_y ** 2 + c1) * (sigma_x + sigma_y + c2)
+        vals.append(num / den)
+    return float(np.mean(vals))
 
 
 def bootstrap_mean_ci(values, n_boot=1000, ci_level=95.0, seed=0):

@@ -11,6 +11,9 @@ source /beegfs/data/work/imvia/in156281/cDDPM/venv/bin/activate
 module load python
 export PYTHONPATH=/work/imvia/in156281/cDDPM/venv/lib/python3.9/site-packages:$PYTHONPATH
 export MPLCONFIGDIR=/work/imvia/in156281/.cache/matplotlib
+export XDG_CACHE_HOME=/work/imvia/in156281/.cache
+export TORCH_HOME=/work/imvia/in156281/.cache/torch
+mkdir -p "$MPLCONFIGDIR" "$XDG_CACHE_HOME" "$TORCH_HOME"
 cd
 cd /beegfs/data/work/imvia/in156281/cDDPMv2
 

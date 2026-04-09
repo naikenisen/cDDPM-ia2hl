@@ -19,7 +19,7 @@ cd /beegfs/data/work/imvia/in156281/cDDPMv2
 
 python eval.py \
 	-s /work/imvia/in156281/cDDPMv2/dataset/test/CD30 \
-	-d /work/imvia/in156281/cDDPMv2/dataset/test/virtual_CD30_DM \
+	-d /work/imvia/in156281/cDDPMv2/dataset/test/virtual_CD30_GAN512 \
 	--bootstrap-samples 1000 \
 	--fid-bootstrap-samples 100 \
 	--ci-level 95
